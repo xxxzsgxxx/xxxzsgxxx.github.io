@@ -4,94 +4,378 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scott的技术博客</title>
-    <script src="https://cdn.jsdelivr.net/npm/calendar.js/dist/calendar.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --light-gray: #f8f9fa;
+            --medium-gray: #ecf0f1;
+            --dark-gray: #7f8c8d;
+            --clock-icon-color: #e67e22;
+            --sun-icon-color: #f1c40f;
+            --moon-icon-color: #9b59b6;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
-            background: #f8f9fa;
-            color: #333;
-            position: relative;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa, #e6f0fa);
+            color: var(--text-color);
             min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
-        .date-container {
-            text-align: center;
+        
+        .header-container {
+            display: flex;
+            align-items: center;
             margin-bottom: 40px;
+            gap: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
+        
+        .clock-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 8px solid var(--clock-icon-color);
+        }
+        
+        .clock-face {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: var(--light-gray);
+        }
+        
+        /* 时钟数字样式 */
+        .clock-number {
+            position: absolute;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-color);
+            width: 24px;
+            height: 24px;
+            text-align: center;
+            line-height: 24px;
+        }
+        
+        /* 时钟指针样式 */
+        .clock-center {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            z-index: 10;
+            box-shadow: 0 0 5px rgba(0,0,0,0.4);
+        }
+        
+        .hour-hand, .minute-hand, .second-hand {
+            position: absolute;
+            transform-origin: bottom center;
+            border-radius: 4px 4px 0 0;
+            box-shadow: 0 0 2px rgba(0,0,0,0.3);
+        }
+        
+        .hour-hand {
+            width: 8px;
+            height: 50px;
+            background: var(--primary-color);
+            top: 50%;
+            left: 50%;
+            margin-top: -50px;
+            margin-left: -4px;
+            z-index: 5;
+        }
+        
+        .minute-hand {
+            width: 5px;
+            height: 70px;
+            background: var(--secondary-color);
+            top: 50%;
+            left: 50%;
+            margin-top: -70px;
+            margin-left: -2.5px;
+            z-index: 6;
+        }
+        
+        .second-hand {
+            width: 2px;
+            height: 80px;
+            background: var(--accent-color);
+            top: 50%;
+            left: 50%;
+            margin-top: -80px;
+            margin-left: -1px;
+            z-index: 7;
+        }
+        
+        .date-time-container {
+            flex: 1;
+        }
+        
         .solar-lunar {
-            font-size: 0.85em;
-            color: #666;
-            line-height: 1.4;
+            font-size: 1.2em;
+            color: var(--primary-color);
+            line-height: 1.8;
+            margin-bottom: 10px;
         }
+        
+        .icon {
+            margin-right: 10px;
+            font-size: 1.3em;
+            vertical-align: middle;
+        }
+        
+        .solar-icon {
+            color: var(--sun-icon-color);
+            text-shadow: 0 0 5px rgba(241, 196, 15, 0.5);
+        }
+        
+        .lunar-icon {
+            color: var(--moon-icon-color);
+            text-shadow: 0 0 5px rgba(155, 89, 182, 0.4);
+        }
+        
+        .time-icon {
+            color: var(--clock-icon-color);
+            text-shadow: 0 0 5px rgba(230, 126, 34, 0.4);
+        }
+        
         .time-display {
-            font-size: 0.75em;
-            color: #888;
-            margin-top: 5px;
+            font-size: 1.1em;
+            color: var(--dark-gray);
+            display: flex;
+            gap: 30px;
+            background: rgba(236, 240, 241, 0.5);
+            padding: 10px 20px;
+            border-radius: 8px;
         }
+        
+        .time-section {
+            display: flex;
+            align-items: center;
+        }
+        
         .blog-title {
             text-align: center;
-            font-size: 2.5em;
-            margin: 50px 0;
-            color: #2c3e50;
-            font-weight: 400;
+            font-size: 3em;
+            margin: 30px 0 40px;
+            color: var(--primary-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
         }
+        
+        .blog-title:after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+        
         .tools-section {
             background: white;
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin-bottom: 100px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .tools-section:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+        }
+        
         .tools-title {
-            font-size: 1.4em;
-            margin-bottom: 20px;
-            color: #2980b9;
+            font-size: 1.8em;
+            margin-bottom: 30px;
+            color: var(--secondary-color);
             text-align: center;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
+        
+        .tools-title i {
+            color: var(--accent-color);
+            font-size: 1.3em;
+        }
+        
         .tool-list {
             list-style: none;
-            padding-left: 20px;
+            padding-left: 0;
         }
+        
         .tool-list li {
-            margin: 15px 0;
-            padding-left: 10px;
-            border-left: 3px solid #3498db;
+            margin: 22px 0;
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            transition: all 0.4s ease;
+            background: rgba(236, 240, 241, 0.3);
+            border-radius: 0 8px 8px 0;
+            position: relative;
         }
+        
+        .tool-list li:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -4px;
+            width: 4px;
+            height: 0;
+            background: var(--accent-color);
+            transition: height 0.4s ease;
+            border-radius: 2px;
+        }
+        
+        .tool-list li:hover {
+            background: rgba(52, 152, 219, 0.1);
+            transform: translateX(8px);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tool-list li:hover:before {
+            height: 100%;
+        }
+        
         .tool-link {
-            color: #2c3e50;
+            color: var(--text-color);
             text-decoration: none;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: block;
             transition: color 0.3s;
+            position: relative;
+            padding-right: 35px;
         }
+        
+        .tool-link i {
+            margin-right: 12px;
+            color: var(--accent-color);
+        }
+        
         .tool-link:hover {
-            color: #e74c3c;
-            text-decoration: underline;
+            color: var(--secondary-color);
         }
+        
+        .tool-link:after {
+            content: "→";
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            opacity: 0;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 1.4em;
+        }
+        
+        .tool-link:hover:after {
+            opacity: 1;
+            right: -5px;
+        }
+        
         footer {
             position: absolute;
             bottom: 20px;
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 0.8em;
-            color: #7f8c8d;
-            padding: 10px;
+            font-size: 0.95em;
+            color: var(--dark-gray);
+            padding: 15px;
+        }
+        
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .footer-icon {
+            color: var(--secondary-color);
+            font-size: 1.2em;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <!-- 顶部日期显示 -->
-    <div class="date-container">
-        <div id="solar-lunar" class="solar-lunar">
-            正在加载日期...
+    <!-- 顶部日期和时间容器 -->
+    <div class="header-container">
+        <!-- 左侧时钟 -->
+        <div class="clock-container">
+            <div class="clock-face">
+                <div class="clock-center"></div>
+                <div class="hour-hand"></div>
+                <div class="minute-hand"></div>
+                <div class="second-hand"></div>
+                <!-- 时钟数字将通过JS动态添加 -->
+            </div>
         </div>
-        <div id="time-display" class="time-display">
-            正在加载时间...
+        
+        <!-- 右侧日期时间信息 -->
+        <div class="date-time-container">
+            <div id="solar-lunar" class="solar-lunar">
+                正在加载日期...
+            </div>
+            <div id="time-display" class="time-display">
+                <div class="time-section">
+                    <i class="fas fa-clock time-icon icon"></i>
+                    <div>NTP时间: <span id="ntp-time">--:--:--</span></div>
+                </div>
+                <div class="time-section">
+                    <i class="fas fa-desktop time-icon icon"></i>
+                    <div>本地时间: <span id="local-time">--:--:--</span></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -100,16 +384,21 @@
 
     <!-- 工具集 -->
     <div class="tools-section">
-        <h2 class="tools-title">AI技术工具集：</h2>
+        <h2 class="tools-title"><i class="fas fa-toolbox"></i>AI技术工具集</h2>
         <ul class="tool-list">
             <li>
-                <a href="https://example.com/ai-bench" class="tool-link" target="_blank">
-                    AI-bench工具
+                <a href="https://github.com/xxxzsgxxx/AI-bench/blob/main/tools/chatllm.py" class="tool-link" target="_blank">
+                    <i class="fas fa-robot"></i>大模型命令行对话程序
                 </a>
             </li>
             <li>
-                <a href="https://example.com/ai-gpu-test" class="tool-link" target="_blank">
-                    AI GPU压测工具
+                <a href="https://github.com/xxxzsgxxx/AI-bench/blob/main/tools/gpu_computility.py" class="tool-link" target="_blank">
+                    <i class="fas fa-microchip"></i>AI GPU算力探测工具
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/xxxzsgxxx/AI-bench" class="tool-link" target="_blank">
+                    <i class="fas fa-brain"></i>AI测试工具集
                 </a>
             </li>
         </ul>
@@ -117,45 +406,254 @@
 
     <!-- 页脚 -->
     <footer>
-        无限技术 无限自由 @2025 copyright scott
+        <div class="footer-content">
+            <i class="fas fa-infinity footer-icon"></i>
+            <div>无限技术 无限自由 @2025 copyright scott</div>
+        </div>
     </footer>
 
     <script>
-        // 更新日期和时间显示
-        function updateDateTime() {
-            const now = new Date();
+        // ===== 本地农历计算库 =====
+        const Lunar = (function() {
+            // 1900-2100年的农历数据
+            const lunarInfo = [
+                0x04bd8, 0x04ae0, 0x0a570, 0x054d5, 0x0d260, 0x0d950, 0x16554, 0x056a0, 0x09ad0, 0x055d2,
+                0x04ae0, 0x0a5b6, 0x0a4d0, 0x0d250, 0x1d255, 0x0b540, 0x0d6a0, 0x0ada2, 0x095b0, 0x14977,
+                0x04970, 0x0a4b0, 0x0b4b5, 0x06a50, 0x06d40, 0x1ab54, 0x02b60, 0x09570, 0x052f2, 0x04970,
+                0x06566, 0x0d4a0, 0x0ea50, 0x06e95, 0x05ad0, 0x02b60, 0x186e3, 0x092e0, 0x1c8d7, 0x0c950,
+                0x0d4a0, 0x1d8a6, 0x0b550, 0x056a0, 0x1a5b4, 0x025d0, 0x092d0, 0x0d2b2, 0x0a950, 0x0b557,
+                0x06ca0, 0x0b550, 0x15355, 0x04da0, 0x0a5d0, 0x14573, 0x052d0, 0x0a9a8, 0x0e950, 0x06aa0,
+                0x0aea6, 0x0ab50, 0x04b60, 0x0aae4, 0x0a570, 0x05260, 0x0f263, 0x0d950, 0x05b57, 0x056a0,
+                0x096d0, 0x04dd5, 0x04ad0, 0x0a4d0, 0x0d4d4, 0x0d250, 0x0d558, 0x0b540, 0x0b5a0, 0x195a6,
+                0x095b0, 0x049b0, 0x0a974, 0x0a4b0, 0x0b27a, 0x06a50, 0x06d40, 0x0af46, 0x0ab60, 0x09570,
+                0x04af5, 0x04970, 0x064b0, 0x074a3, 0x0ea50, 0x06b58, 0x055c0, 0x0ab60, 0x096d5, 0x092e0,
+                0x0c960, 0x0d954, 0x0d4a0, 0x0da50, 0x07552, 0x056a0, 0x0abb7, 0x025d0, 0x092d0, 0x0cab5,
+                0x0a950, 0x0b4a0, 0x0baa4, 0x0ad50, 0x055d9, 0x04ba0, 0x0a5b0, 0x15176, 0x052b0, 0x0a930,
+                0x07954, 0x06aa0, 0x0ad50, 0x05b52, 0x04b60, 0x0a6e6, 0x0a4e0, 0x0d260, 0x0ea65, 0x0d530,
+                0x05aa0, 0x076a3, 0x096d0, 0x04bd7, 0x04ad0, 0x0a4d0, 0x1d0b6, 0x0d250, 0x0d520, 0x0dd45,
+                0x0b5a0, 0x056d0, 0x055b2, 0x049b0, 0x0a577, 0x0a4b0, 0x0aa50, 0x1b255, 0x06d20, 0x0ada0
+            ];
             
-            // 获取公历日期和星期
-            const year = now.getFullYear();
-            const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const day = now.getDate().toString().padStart(2, '0');
-            const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
-            const weekday = weekdays[now.getDay()];
+            // 中文数字转换
+            const cnMonths = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "冬月", "腊月"];
+            const cnDays = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", 
+                            "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十",
+                            "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"];
+            const celestialStems = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+            const terrestrialBranches = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
             
-            // 获取农历日期
-            const lunarDate = calendar.solar2lunar(year, month, day);
-            const lunarDateStr = lunarDate.gzYear + '年' + lunarDate.IMonthCn + lunarDate.IDayCn;
+            // 转换为农历日期
+            function solar2lunar(year, month, day) {
+                // 参数处理
+                year = parseInt(year, 10);
+                month = parseInt(month, 10);
+                day = parseInt(day, 10);
+                
+                // 1900-2100年范围检查
+                if (year < 1900 || year > 2100) {
+                    return {
+                        error: '年份超出范围（1900-2100）'
+                    };
+                }
+                
+                // 计算日基数（参考1900年1月31日为0）
+                const baseDate = new Date(1900, 0, 31);
+                const targetDate = new Date(year, month - 1, day);
+                const totalDays = Math.floor((targetDate - baseDate) / (24 * 60 * 60 * 1000));
+                
+                // 初始化
+                let temp = 0;
+                let lunarYear = 1900;
+                let offset = totalDays;
+                
+                // 确定农历年
+                for (; lunarYear < 2100 && offset >= 0; lunarYear++) {
+                    temp = daysOfLunarYear(lunarYear);
+                    if (offset < temp) break;
+                    offset -= temp;
+                }
+                
+                // 确定农历月
+                let lunarMonth = 1;
+                let isLeap = false;
+                
+                for (; lunarMonth <= 12; lunarMonth++) {
+                    if (isLeapMonth(lunarYear, lunarMonth)) {
+                        isLeap = true;
+                        temp = daysOfLeapMonth(lunarYear);
+                    } else {
+                        temp = daysOfLunarMonth(lunarYear, lunarMonth);
+                    }
+                    
+                    if (offset < temp) break;
+                    offset -= temp;
+                    
+                    // 如果是闰月但已经处理完，重置标识
+                    if (isLeap && lunarMonth === leapMonth(lunarYear)) {
+                        isLeap = false;
+                    }
+                }
+                
+                // 确定农历日
+                const lunarDay = offset + 1;
+                
+                // 天干地支年份
+                const stemIndex = (lunarYear - 4) % 10;
+                const branchIndex = (lunarYear - 4) % 12;
+                const stemBranchYear = celestialStems[stemIndex] + terrestrialBranches[branchIndex];
+                
+                // 返回结果
+                return {
+                    year: lunarYear,
+                    month: lunarMonth,
+                    day: lunarDay,
+                    isLeap: isLeap,
+                    monthCN: isLeap ? '闰' + cnMonths[lunarMonth - 1] : cnMonths[lunarMonth - 1],
+                    dayCN: cnDays[lunarDay - 1],
+                    yearGZ: stemBranchYear
+                };
+            }
             
-            // 更新顶部日期显示
-            document.getElementById('solar-lunar').innerHTML = 
-                `公历：${year}年${month}月${day}日 ${weekday}<br>农历：${lunarDateStr}`;
+            // 获取闰月
+            function leapMonth(year) {
+                return lunarInfo[year - 1900] & 0xf;
+            }
             
-            // 更新时间显示（NTP时间使用本地时间模拟）
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('time-display').innerHTML = 
-                `NTP时间：${hours}:${minutes}:${seconds} 本地电脑时间：${hours}:${minutes}:${seconds}`;
-        }
-
-        // 页面加载时初始化
-        window.onload = function() {
+            // 是否闰月
+            function isLeapMonth(year, month) {
+                return leapMonth(year) && leapMonth(year) === month;
+            }
+            
+            // 农历年天数
+            function daysOfLunarYear(year) {
+                let sum = 348;
+                for (let i = 0x8000; i > 0x8; i >>= 1) {
+                    sum += (lunarInfo[year - 1900] & i) ? 1 : 0;
+                }
+                return sum + daysOfLeapMonth(year);
+            }
+            
+            // 闰月天数
+            function daysOfLeapMonth(year) {
+                if (leapMonth(year)) {
+                    return (lunarInfo[year - 1900] & 0x10000) ? 30 : 29;
+                }
+                return 0;
+            }
+            
+            // 农历月天数
+            function daysOfLunarMonth(year, month) {
+                return (lunarInfo[year - 1900] & (0x10000 >> month)) ? 30 : 29;
+            }
+            
+            return {
+                solar2lunar: solar2lunar
+            };
+        })();
+        
+        // ===== 主页面逻辑 =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const hourHand = document.querySelector('.hour-hand');
+            const minuteHand = document.querySelector('.minute-hand');
+            const secondHand = document.querySelector('.second-hand');
+            const ntpTimeElement = document.getElementById('ntp-time');
+            const localTimeElement = document.getElementById('local-time');
+            const clockFace = document.querySelector('.clock-face');
+            
+            // 生成时钟数字
+            function createClockNumbers() {
+                // 移除现有的数字（如果有）
+                const existingNumbers = clockFace.querySelectorAll('.clock-number');
+                existingNumbers.forEach(number => number.remove());
+                
+                // 创建1-12的数字标记
+                const numbers = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+                
+                // 添加时钟数字
+                numbers.forEach((num, index) => {
+                    const angle = (index * 30) * (Math.PI / 180); // 转换为弧度
+                    const radius = 65; // 距离中心点的半径
+                    const x = Math.sin(angle) * radius;
+                    const y = -Math.cos(angle) * radius; // 负号是因为坐标系与时钟坐标系方向相反
+                    
+                    const numberElement = document.createElement('div');
+                    numberElement.className = 'clock-number';
+                    numberElement.textContent = num;
+                    numberElement.style.left = `calc(50% + ${x}px)`;
+                    numberElement.style.top = `calc(50% + ${y}px)`;
+                    
+                    clockFace.appendChild(numberElement);
+                });
+            }
+            
+            // 更新时钟和时间显示
+            function updateDateTime() {
+                const now = new Date();
+                
+                // 更新时钟
+                updateClock(now);
+                
+                // 获取公历日期和星期
+                const year = now.getFullYear();
+                const month = (now.getMonth() + 1).toString().padStart(2, '0');
+                const day = now.getDate().toString().padStart(2, '0');
+                const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+                const weekday = weekdays[now.getDay()];
+                
+                // 获取农历日期
+                let lunarText = "";
+                try {
+                    const lunarDate = Lunar.solar2lunar(year, month, day);
+                    
+                    if (lunarDate.error) {
+                        lunarText = `<i class="fas fa-moon lunar-icon icon"></i>农历：${lunarDate.error}`;
+                    } else {
+                        // 天干地支年份表示
+                        lunarText = `<i class="fas fa-moon lunar-icon icon"></i>农历：${lunarDate.yearGZ}年${lunarDate.monthCN}${lunarDate.dayCN}`;
+                    }
+                } catch (error) {
+                    lunarText = `<i class="fas fa-moon lunar-icon icon"></i>农历：计算错误`;
+                }
+                
+                // 更新日期显示
+                document.getElementById('solar-lunar').innerHTML = 
+                    `<i class="fas fa-sun solar-icon icon"></i>公历：${year}年${month}月${day}日 ${weekday}<br>${lunarText}`;
+                
+                // 更新时间显示
+                const hours = now.getHours().toString().padStart(2, '0');
+                const minutes = now.getMinutes().toString().padStart(2, '0');
+                const seconds = now.getSeconds().toString().padStart(2, '0');
+                
+                ntpTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+                localTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+            
+            // 更新时钟指针
+            function updateClock(now) {
+                const seconds = now.getSeconds();
+                const minutes = now.getMinutes();
+                const hours = now.getHours() % 12;
+                
+                // 计算指针角度（加上分钟/小时的偏移量，使指针移动更平滑）
+                const secondsDeg = (seconds * 6);
+                const minutesDeg = (minutes * 6) + (seconds * 0.1);
+                const hoursDeg = (hours * 30) + (minutes * 0.5);
+                
+                // 应用旋转
+                secondHand.style.transform = `rotate(${secondsDeg}deg)`;
+                minuteHand.style.transform = `rotate(${minutesDeg}deg)`;
+                hourHand.style.transform = `rotate(${hoursDeg}deg)`;
+            }
+            
+            // 初始创建时钟数字
+            createClockNumbers();
+            
             // 初始更新
             updateDateTime();
             
             // 每秒更新一次时间
             setInterval(updateDateTime, 1000);
-        };
+        });
     </script>
 </body>
 </html>
