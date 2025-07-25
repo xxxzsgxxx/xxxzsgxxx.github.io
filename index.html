@@ -1,11 +1,161 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <title>我的GitHub页面</title>
-  <style>body { text-align: center; padding: 50px; }</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scott的技术博客</title>
+    <script src="https://cdn.jsdelivr.net/npm/calendar.js/dist/calendar.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #333;
+            position: relative;
+            min-height: 100vh;
+        }
+        .date-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .solar-lunar {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.4;
+        }
+        .time-display {
+            font-size: 0.75em;
+            color: #888;
+            margin-top: 5px;
+        }
+        .blog-title {
+            text-align: center;
+            font-size: 2.5em;
+            margin: 50px 0;
+            color: #2c3e50;
+            font-weight: 400;
+        }
+        .tools-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+        .tools-title {
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            color: #2980b9;
+            text-align: center;
+        }
+        .tool-list {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .tool-list li {
+            margin: 15px 0;
+            padding-left: 10px;
+            border-left: 3px solid #3498db;
+        }
+        .tool-link {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .tool-link:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+        footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.8em;
+            color: #7f8c8d;
+            padding: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>欢迎访问我的站点！</h1>
-  <p>托管于GitHub Pages的静态页面示例。</p>
+    <!-- 顶部日期显示 -->
+    <div class="date-container">
+        <div id="solar-lunar" class="solar-lunar">
+            正在加载日期...
+        </div>
+        <div id="time-display" class="time-display">
+            正在加载时间...
+        </div>
+    </div>
+
+    <!-- 博客标题 -->
+    <h1 class="blog-title">scott的技术博客</h1>
+
+    <!-- 工具集 -->
+    <div class="tools-section">
+        <h2 class="tools-title">AI技术工具集：</h2>
+        <ul class="tool-list">
+            <li>
+                <a href="https://example.com/ai-bench" class="tool-link" target="_blank">
+                    AI-bench工具
+                </a>
+            </li>
+            <li>
+                <a href="https://example.com/ai-gpu-test" class="tool-link" target="_blank">
+                    AI GPU压测工具
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        无限技术 无限自由 @2025 copyright scott
+    </footer>
+
+    <script>
+        // 更新日期和时间显示
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 获取公历日期和星期
+            const year = now.getFullYear();
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const day = now.getDate().toString().padStart(2, '0');
+            const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+            const weekday = weekdays[now.getDay()];
+            
+            // 获取农历日期
+            const lunarDate = calendar.solar2lunar(year, month, day);
+            const lunarDateStr = lunarDate.gzYear + '年' + lunarDate.IMonthCn + lunarDate.IDayCn;
+            
+            // 更新顶部日期显示
+            document.getElementById('solar-lunar').innerHTML = 
+                `公历：${year}年${month}月${day}日 ${weekday}<br>农历：${lunarDateStr}`;
+            
+            // 更新时间显示（NTP时间使用本地时间模拟）
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('time-display').innerHTML = 
+                `NTP时间：${hours}:${minutes}:${seconds} 本地电脑时间：${hours}:${minutes}:${seconds}`;
+        }
+
+        // 页面加载时初始化
+        window.onload = function() {
+            // 初始更新
+            updateDateTime();
+            
+            // 每秒更新一次时间
+            setInterval(updateDateTime, 1000);
+        };
+    </script>
 </body>
 </html>
