@@ -411,13 +411,14 @@
     <footer>
         <div class="footer-content">
             <i class="fas fa-infinity footer-icon"></i>
-            <div>无限技术 无限自由 @2025 copyright scott</div>
+            <div>无限技术 无限自由 ©2025 copyright scott</div>
         </div>
         <!-- 添加IP地址显示区域 -->
         <div class="ip-display" id="ip-display">
             <i class="fas fa-network-wired"></i>
             <span>您的IP地址: 正在获取...</span>
         </div>
+        
     </footer>
 
     <style>
@@ -1024,6 +1025,50 @@
             // 每秒更新一次时间
             setInterval(updateDateTime, 1000);
         });
+    </script>
+    <script> 
+// 添加DOM加载完成监听
+document.addEventListener('DOMContentLoaded', function() {
+    const ipDisplay = document.getElementById('ip-display');
+    
+    // 带超时和重试的IP获取方案
+    const fetchIP = async (url, timeout=3000) => {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP错误 ${response.status}`);
+            return await response.json();
+        } catch (e) {
+            return null;
+        }
+    };
+
+    // 多通道IP获取（包含4个备用API）
+    const ipProviders = [
+        'https://api.ipify.org?format=json',
+        'https://ipapi.co/json/',
+        'https://worldtimeapi.org/api/ip',
+        'https://ipwho.is/',
+        'https://api.my-ip.io/ip.json'
+    ];
+
+    // 并行请求+优先显示
+    Promise.any(ipProviders.map(async provider => {
+        const data = await fetchIP(provider);
+        return data.ip || data.ip_address;
+    }))
+    .then(ip => {
+        ipDisplay.innerHTML = `<i class="fas fa-network-wired"></i>
+            <span>您的IP地址: ${ip}</span>`;
+    })
+    .catch(() => {
+        ipDisplay.innerHTML = `<i class="fas fa-unlink"></i>
+            <span>网络连接异常，请检查网络设置</span>`;
+    });
+});
     </script>
 </body>
 </html>
